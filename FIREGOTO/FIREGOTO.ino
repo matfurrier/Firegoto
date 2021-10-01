@@ -350,12 +350,15 @@ void loop() {
   }
   if ( setupflag == 0 )
   {
-    if (PrimeiroCommanMillis < currentMillis)
-
+    if (flagDebug == 1)
     {
-      PrintLocalHora();
-      SerialPrintDebug(String(Hora2DecHora(hour(), minute(), SegundoFracao), 10)) ;
-      PrimeiroCommanMillis = PrimeiroCommanMillis + 1001;
+      if (PrimeiroCommanMillis < currentMillis)
+
+      {
+        PrintLocalHora();
+        SerialPrintDebug(String(Hora2DecHora(hour(), minute(), SegundoFracao), 10)) ;
+        PrimeiroCommanMillis = PrimeiroCommanMillis + 1001;
+      }
     }
   }
   if ( setupflag == 1 )
