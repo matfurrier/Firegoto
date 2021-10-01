@@ -34,7 +34,7 @@ void RotinadeSetup() //:HSETUPON#
   }
   setupflag = 2;
 
-  EnderecoLCD();
+  //EnderecoLCD();
   SerialPrint(" \n O valor atual timer e: ");
   SerialPrint(String(MinTimer - 200));
   SerialPrint(" (:HST00000# -> Quanto menor mais rapido ate o limite do motor ambos motores) \n");

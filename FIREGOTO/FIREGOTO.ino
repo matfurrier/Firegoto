@@ -96,12 +96,12 @@ int ledStateG = LOW;
 
 
 /*valores maximo para o passo (Valor ideal 1286400)*/
-double dMaxPassoAlt = 3844654; /* //valor de resolucao AR = Passo * MicroPasso * reducao ex(200*16*402)/4    (16*200*(117/11)*56)*/
-double dMaxPassoAz = 3844654; /*/valor de resolucao AR = Passo * MicroPasso * reducao ex(200*16*402)   (16*200*(118/11)*57)*/
-int dMinTimer = 500; /*/passo*/
-double dMaxSpeedAlt = 3844654;
-double dMaxSpeedAz = 3844654;
-int dReducao = 32;
+double dMaxPassoAlt = 6384000; /* //valor de resolucao AR = Passo * MicroPasso * reducao ex(200*16*402)/4    (16*200*(117/11)*56)*/
+double dMaxPassoAz = 6384000; /*/valor de resolucao AR = Passo * MicroPasso * reducao ex(200*16*402)   (16*200*(118/11)*57)*/
+int dMinTimer = 600; /*/passo*/
+double dMaxSpeedAlt = 6384000;
+double dMaxSpeedAz = 6384000;
+int dReducao = 16;
 
 
 //Variaveis de persistencia e estrutura de dados ----------------------------------------------------------------------------------------------------------------
@@ -230,7 +230,7 @@ void setup() {
   Serial.begin(9600);
   Serial3.begin(9600);
   SerialUSB.begin(9600);
-  Wire1.begin();
+  //Wire1.begin();
 
 
 
