@@ -355,6 +355,7 @@ void loop() {
       if (PrimeiroCommanMillis < currentMillis)
 
       {
+        //Relógio desabilitado para nao comprometer o sync
         PrintLocalHora();
         SerialPrintDebug(String(Hora2DecHora(hour(), minute(), SegundoFracao), 10)) ;
         PrimeiroCommanMillis = PrimeiroCommanMillis + 1001;
