@@ -94,10 +94,10 @@ int motorSpeedY = 0;
 #define MotorAZ_CFG1 50
 #define MotorAZ_Ativa 52
 
-// Variáveis para o controle do motor do focalizador usando portas do módulo GPS (incluído por L. H. Bonani)
-#define MotorFoc_Direcao 31 // TX GPS
-#define MotorFoc_Passo 33 // RX GPS
-#define MotorFoc_Enable 35 // 
+// Variáveis para o controle do motor do focalizador (incluído por L. H. Bonani)
+#define MotorFoc_Direcao 7
+#define MotorFoc_Passo 6
+#define MotorFoc_Enable 0
 
 AccelStepper AltMotor(AccelStepper::DRIVER, MotorALT_Passo, MotorALT_Direcao);
 AccelStepper AzMotor(AccelStepper::DRIVER, MotorAZ_Passo, MotorAZ_Direcao);
