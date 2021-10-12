@@ -34,6 +34,51 @@
 //DEBUG
 int flagDebug = 0;
 
+<<<<<<< Updated upstream
+=======
+//2. Pinos Joystick
+#define xPin     A0   
+#define yPin     A1   
+#define kPin     A2   // botão
+
+//Menu e joystick
+int tCount1;
+bool refresh;//lcd clear On/Off
+//leerJoystick
+int joyRead;
+int joyPos; 
+int lastJoyPos;
+long lastDebounceTime = 0; 
+long debounceDelay = 70;                 //user define
+//Control Joystick
+bool PQCP;
+bool editMode;
+//sistema de menus
+int mNivel1;  
+int mNivel2;  
+//editmode
+byte n[19];
+int lastN;
+int lcdX;
+int jBut;
+//int lcdY;
+bool exiT;
+bool moveRADEC;
+
+>>>>>>> Stashed changes
+
+// Variáveis de estado (incluído por L. H. Bonani)
+bool focStatus = false;
+bool manualMoveRADEC = false;
+bool tmcFlag = true;
+
+//  Variáveis para a identificação dos movimentos manuais dos motores (incluído por L. H. Bonani)
+bool mRA_leste = false;
+bool mRA_oeste = false;
+bool mDEC_norte = false;
+bool mDEC_sul = false;
+int motorSpeedX = 0;
+int motorSpeedY = 0;
 
 //Criacao dos motores
 #define MotorALT_Direcao 22
@@ -49,9 +94,15 @@ int flagDebug = 0;
 #define MotorAZ_CFG1 50
 #define MotorAZ_Ativa 52
 
+// Variáveis para o controle do motor do focalizador usando portas do módulo GPS (incluído por L. H. Bonani)
+#define MotorFoc_Direcao 31 // TX GPS
+#define MotorFoc_Passo 33 // RX GPS
+#define MotorFoc_Enable 35 // 
 
 AccelStepper AltMotor(AccelStepper::DRIVER, MotorALT_Passo, MotorALT_Direcao);
 AccelStepper AzMotor(AccelStepper::DRIVER, MotorAZ_Passo, MotorAZ_Direcao);
+AccelStepper focMotor = AccelStepper(AccelStepper::DRIVER, MotorFoc_Passo, MotorFoc_Direcao); // Motor do focalizador (incluído por L. H. Bonani)
+
 int accel = 1;
 
 
@@ -62,15 +113,35 @@ int accel = 1;
 int ledStateR = LOW;
 int ledStateB = LOW;
 int ledStateG = LOW;
-
+long lastInputCheckTime = 0;
 
 /*valores maximo para o passo (Valor ideal 1286400)*/
+<<<<<<< Updated upstream
 double dMaxPassoAlt = 3844654; /* //valor de resolucao AR = Passo * MicroPasso * reducao ex(200*16*402)/4    (16*200*(117/11)*56)*/
 double dMaxPassoAz = 3844654; /*/valor de resolucao AR = Passo * MicroPasso * reducao ex(200*16*402)   (16*200*(118/11)*57)*/
 int dMinTimer = 500; /*/passo*/
 double dMaxSpeedAlt = 3844654;
 double dMaxSpeedAz = 3844654;
 int dReducao = 16;
+=======
+double dMaxPassoAlt = 6384000; /* //valor de resolucao AR = Passo * MicroPasso * reducao ex(200*16*402)/4    (16*200*(117/11)*56)*/
+double dMaxPassoAz = 6384000; //6400; //2304000; /*/valor de resolucao AZ = Passo * MicroPasso * reducao ex(200*16*402)   (16*200*(118/11)*57)*/
+double dMaxPassoFoc = 1600;
+int dMinTimer = 150; /*/passo*/
+double dMaxSpeedAlt = 8000;
+double dMaxSpeedAz = 8000; 
+double dMaxSpeedFoc = 4000;
+int dReducao = 16; // Quantidade de micropassos
+
+// Para o controle manual dos motores (Incluído por L.H.Bonani)
+int valPotFoc = 0;
+int valPotX = 0;
+int valPotY = 0;
+int maxSpeedMotorFoc = 4000; // 1000 ok
+int maxSpeedMotorRA = 13300; // Cálculo em função de dMaxPassoAz para uma velocidade de 10 graus/segundo (36 segundos para uma volta completa) - Incluído por L.H.Bonani
+int maxSpeedMotorDEC = 13300 ; // Cálculo em função de dMaxPassoAlt para uma velocidade de 10 graus/segundo (36 segundos para uma volta completa) - Incluído por L.H.Bonani
+ 
+>>>>>>> Stashed changes
 
 
 //Variaveis de persistencia e estrutura de dados ----------------------------------------------------------------------------------------------------------------
@@ -171,7 +242,6 @@ int Segundo;
 double Microssegundo = 0 , SegundoFracao = 0.0, MilissegundoSeg = 0.0, MilissegundoI = 0.0;
 
 
-
 void setup() {
   pinMode(LedR, OUTPUT);
   pinMode(LedG, OUTPUT);
@@ -179,7 +249,14 @@ void setup() {
   digitalWrite(LedR, ledStateR);
   digitalWrite(LedB, ledStateB);
   digitalWrite(LedG, ledStateG);
+<<<<<<< Updated upstream
 
+=======
+  //Pinos Joystick
+  pinMode(xPin, INPUT);
+  pinMode(yPin, INPUT);
+  pinMode(kPin, INPUT_PULLUP);
+>>>>>>> Stashed changes
 
 
   if (ledStateR == LOW) {
@@ -192,6 +269,10 @@ void setup() {
   Serial.begin(9600);
   Serial3.begin(9600);
   SerialUSB.begin(9600);
+<<<<<<< Updated upstream
+=======
+  Wire1.begin();
+>>>>>>> Stashed changes
 
 
 
@@ -231,30 +312,75 @@ void setup() {
   byte* b = dueFlashStorage.readAddress(4); // byte array which is read from flash at adress 4
   memcpy(&configurationFromFlash, b, sizeof(Configuration)); // copy byte array to temporary struct
   Reducao = configurationFromFlash.Reducao;
+   // Alteração da configuração dos motores em função do tipo de driver (incluído por L. H. Bonani) 
+   if(Reducao==64) {
+    if (tmcFlag == false) {
+      Serial.print("Configuração de 64 micropassos para DVR8825 não suportada. Configurando para 32 micropassos. \n");
+      AltaM2 = HIGH;
+      AltaM1 = LOW;
+      AltaM0 = HIGH;
+    } else {
+      AltaM0 = LOW;
+      AltaM1 = HIGH;
+    } 
+  }
   if(Reducao==32) {
-    AltaM2 = HIGH;
-    AltaM1 = LOW;
-    AltaM0 = HIGH;
+    if (tmcFlag == false) {
+      AltaM2 = HIGH;
+      AltaM1 = LOW;
+      AltaM0 = HIGH;
+    } else {
+      AltaM0 = HIGH;
+      AltaM1 = LOW;
+    }
   }
   if(Reducao==16) {
+<<<<<<< Updated upstream
     AltaM2 = LOW;
     AltaM1 = LOW;
     AltaM0 = LOW;
+=======
+    if (tmcFlag == false) {
+      AltaM2 = HIGH;
+      AltaM1 = LOW;
+      AltaM0 = LOW;
+    } else {
+      AltaM0 = HIGH;
+      AltaM1 = HIGH;
+    }
+>>>>>>> Stashed changes
   }
   if(Reducao==8) {
-    AltaM2 = LOW;
-    AltaM1 = HIGH;
-    AltaM0 = HIGH;
+    if (tmcFlag == false) {
+      AltaM2 = LOW;
+      AltaM1 = HIGH;
+      AltaM0 = HIGH;
+    } else {
+      AltaM0 = LOW;
+      AltaM1 = LOW;
+    }
   }
   if(Reducao==4) {
-    AltaM2 = LOW;
-    AltaM1 = HIGH;
-    AltaM0 = LOW;
+    if (tmcFlag == false) {
+      AltaM2 = LOW;
+      AltaM1 = HIGH;
+      AltaM0 = LOW;
+    } else {
+      Serial.print("Configuração de 4 micropassos para TMC2209 não suportada. Configurando para 8 micropassos. \n");
+      AltaM0 = LOW;
+      AltaM1 = LOW;
+    }
   }
   if(Reducao==2) {
-    AltaM2 = LOW;
-    AltaM1 = LOW;
-    AltaM0 = HIGH;
+    if (tmcFlag == false) {
+      AltaM2 = LOW;
+      AltaM1 = LOW;
+      AltaM0 = HIGH;
+    } else {
+      Serial.print("Configuração de 2 micropassos para TMC2209 não suportada. Configurando para 8 micropassos. \n");
+      AltaM0 = LOW;
+      AltaM1 = LOW;
+    }
   }
   MaxPassoAlt = configurationFromFlash.MaxPassoAlt;
   MaxPassoAz = configurationFromFlash.MaxPassoAz;
@@ -281,9 +407,14 @@ void setup() {
   ResolucaoeixoAzGrausDecimal = 360.0 / MaxPassoAz ;
   ResolucaoeixoAltPassoGrau = (MaxPassoAlt  / 360.0);
   ResolucaoeixoAzPassoGrau = (MaxPassoAz  / 360.0);
+<<<<<<< Updated upstream
+=======
+  //Instruções do LCD
+  lcd.begin(Wire1); 
+  lcd.backlight();
+  lcd.clear();
+>>>>>>> Stashed changes
 }
-
-
 
 void loop() {
   if (ledStateR == LOW) {
@@ -371,5 +502,10 @@ void loop() {
     previousMillis = millis();
   }
   AlteraMicroSeg();
+<<<<<<< Updated upstream
 
+=======
+  controlJoystick2();
+  menu();
+>>>>>>> Stashed changes
 }

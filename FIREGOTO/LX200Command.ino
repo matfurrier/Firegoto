@@ -340,11 +340,6 @@ void printHelp()
   //  Serial.println("Get date 	:GC# 	 Reply: MM/DD/YY#");
 }
 
-
-
-
-
-
 void printUTC() //:GG# Get UTC offset time Returns: sHH# or sHH.H#
 {
   char str[3];
@@ -378,6 +373,10 @@ void setLocalData() //:SCMM/DD/YY# Change Handbox Date to MM/DD/YY #:SC 03/20/14
   int HH = hour();
   int MM = minute();
   int SS = second();
+
+ // SerialPrint("\n O valor dia é: ");SerialPrint(String(dia));SerialPrint(" o valor mes é: ");SerialPrint(String(mes));SerialPrint(" o valor ano é: ");SerialPrint(String(ano));
+ // SerialPrint("\n O valor HH é: ");SerialPrint(String(HH));SerialPrint(" o valor MM é: ");SerialPrint(String(MM));SerialPrint(" o valor SS é: ");SerialPrint(String(SS));
+  
   setTime(HH, MM, SS, dia, mes, ano);
   adjustTime(tmp);
   SerialPrint("1");
@@ -395,7 +394,6 @@ void printDataLocal() //Get date 	:GC# 	 Reply: MM/DD/YY#
   char str[10];
   sprintf(str, "%02d/%02d/%02d#", int(mes), int(dia), int(ano));
   SerialPrint(str);
-
 }
 
 void setLocalHora()//:SLHH:MM:SS#  Set the local Time
@@ -539,7 +537,11 @@ void printDECmount() //:GD# Get Telescope Declination. Returns: sDD*MM# or sDD*M
   int Ddeg = abs((int)DecDegtoDeg(DECmount));
   int Min = abs((int)DecDegtoMin(DECmount));
   int Sec = abs((int)DecDegtoSec(DECmount));
+<<<<<<< Updated upstream
   char str[9];
+=======
+  char str[10]; // Original: char str[9]; modificado por Regis Suzano da Costa
+>>>>>>> Stashed changes
   if (DECmount < 0) {
     sprintf(str, "-%02d*%02d:%02d#", int(Ddeg), int(Min), int(Sec));
   } else {
@@ -1095,7 +1097,7 @@ void setMaxPassoAlt()  //:HSAL00000000#
   byte b2[sizeof(Configuration)]; // create byte array to store the struct
   memcpy(b2, &configurationFromFlash, sizeof(Configuration)); // copy the struct to the byte array
   dueFlashStorage.write(4, b2, sizeof(Configuration)); // write byte array to flash
-  SerialPrint("1 - OK Set AL microsteps");
+  SerialPrint("1 - OK Set Alt microsteps");
 
 }
 
@@ -1117,7 +1119,7 @@ void setMaxPassoAz() //:HSAZ00000000#
   byte b2[sizeof(Configuration)]; // create byte array to store the struct
   memcpy(b2, &configurationFromFlash, sizeof(Configuration)); // copy the struct to the byte array
   dueFlashStorage.write(4, b2, sizeof(Configuration)); // write byte array to flash
-  SerialPrint("1 - OK Set AZ microsteps");
+  SerialPrint("1 - OK Set Az microsteps");
 
 }
 

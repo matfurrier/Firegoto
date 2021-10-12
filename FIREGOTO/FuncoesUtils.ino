@@ -23,6 +23,9 @@
 *
 * \return double.
 */
+
+#include <math.h>
+
 String readString; //armazena informaÃƒÂ§ÃƒÂµes mesmo com acompanhamento ativo
 char informacao;
 char posicao;
