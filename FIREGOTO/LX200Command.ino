@@ -207,6 +207,25 @@ void executecommand()
               getMinTimer(); //:HGT#
             }
             break;
+          case 'T':
+            if (Command[numCommandexec][5] == '0')//:HTMC0#
+            {
+               configurationFromFlash.tmcFlag = false;
+               tmcFlag = false;
+               Serial.print("TMC desabilitado, utilizando instruções do 8825.\n");
+            }
+            if (Command[numCommandexec][5] == '1')//:HTMC1#
+            {
+              configurationFromFlash.tmcFlag = true;
+              tmcFlag = true;
+              Serial.print("TMC habilitado, utilizando instruções do TMC 2209. \n");
+            }
+            // write configuration struct to flash at adress 4
+            byte b2[sizeof(Configuration)]; // create byte array to store the struct
+            memcpy(b2, &configurationFromFlash, sizeof(Configuration)); // copy the struct to the byte array
+            dueFlashStorage.write(4, b2, sizeof(Configuration)); // write byte array to flash
+            SerialPrint("1 - TMC Config saved");
+            break;
         }
       }
 

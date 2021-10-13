@@ -64,7 +64,7 @@ bool moveRADEC;
 // Variáveis de estado (incluído por L. H. Bonani)
 bool focStatus = false;
 bool manualMoveRADEC = false;
-bool tmcFlag = true;
+//bool tmcFlag = true;
 
 //  Variáveis para a identificação dos movimentos manuais dos motores (incluído por L. H. Bonani)
 bool mRA_leste = false;
@@ -117,14 +117,14 @@ int ledStateG = LOW;
 long lastInputCheckTime = 0;
 
 /*valores maximo para o passo (Valor ideal 1286400)*/
-double dMaxPassoAlt = 1920000; //6400; //2304000; /* //valor de resolucao AR = Passo * MicroPasso * reducao ex(200*16*402)/4    (16*200*(117/11)*56)*/
-double dMaxPassoAz = 1920000; //6400; //2304000; /*/valor de resolucao AZ = Passo * MicroPasso * reducao ex(200*16*402)   (16*200*(118/11)*57)*/
+double dMaxPassoAlt = 6384000;  /* //valor de resolucao AR = Passo * MicroPasso * reducao ex(200*16*402)/4    (16*200*(117/11)*56)*/
+double dMaxPassoAz = 6384000;  /*/valor de resolucao AZ = Passo * MicroPasso * reducao ex(200*16*402)   (16*200*(118/11)*57)*/
 double dMaxPassoFoc = 1600;
-int dMinTimer = 150; /*/passo*/
-double dMaxSpeedAlt = 8000; // 6400; // 2304000;
-double dMaxSpeedAz = 8000; // 6400; //2304000;
+int dMinTimer = 400; /*/passo*/
+double dMaxSpeedAlt = 8000; 
+double dMaxSpeedAz = 8000; 
 double dMaxSpeedFoc = 4000;
-int dReducao = 32; // Quantidade de micropassos
+int dReducao = 16; // Quantidade de micropassos
 
 // Para o controle manual dos motores (Incluído por L.H.Bonani)
 int valPotFoc = 0;
@@ -154,6 +154,7 @@ struct Configuration {
   double latitude;
   double longitude;
   int32_t UTC;
+  bool tmcFlag;
   char* Local;
 };
 Configuration configuration;
@@ -173,6 +174,7 @@ int AltaM0;
 double latitude;
 double longitude;
 int UTC;
+bool tmcFlag;
 
 
 
@@ -273,14 +275,15 @@ void setup() {
     configuration.MaxPassoAlt = dMaxPassoAlt;
     configuration.MaxPassoAz = dMaxPassoAz;
     configuration.MinTimer = dMinTimer;
-    configuration.latitude = -25.40;;
-    configuration.longitude = -49.20;
-    configuration.SentidoDEC = 0;
-    configuration.SentidoRA = 0;
+    configuration.latitude = -21.16;;
+    configuration.longitude = -47.78;
+    configuration.SentidoDEC = 1;
+    configuration.SentidoRA = 1;
     setTime(00, 00, 00, 01, 01, 2021);
     MilissegundoSeg = second();
     configuration.DataHora = now();
-    configuration.UTC = -2;
+    configuration.UTC = -3;
+    tmcFlag = false;
     strcpy (configuration.Local, "Minha Casa");
     // write configuration struct to flash at adress 4
     byte b2[sizeof(Configuration)]; // create byte array to store the struct
