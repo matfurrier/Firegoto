@@ -353,8 +353,8 @@ void AltaResolucao () {  // Modificado por L.H.Bonani para permitir o uso do TMC
        digitalWrite(MotorALT_M0, AltaM0);
        digitalWrite(MotorAZ_M1, AltaM1);
        digitalWrite(MotorAZ_M0, AltaM0);
-       AltMotor.setCurrentPosition((int)AltMotor.currentPosition() * dReducao * 2); // Adição do Romulo Almeida para funcionamento do TMC 2209
-       AzMotor.setCurrentPosition((int)AzMotor.currentPosition() * dReducao * 2); // Adição do Romulo Almeida para funcionamento do TMC 2209
+       AltMotor.setCurrentPosition((int)AltMotor.currentPosition() * dReducao); // Adição do Romulo Almeida para funcionamento do TMC 2209
+       AzMotor.setCurrentPosition((int)AzMotor.currentPosition() * dReducao); // Adição do Romulo Almeida para funcionamento do TMC 2209
     }
     AltMotor.setAcceleration(dReducao * dReducao * 2); // Adição do Romulo Almeida para funcionamento do TMC 2209
     AzMotor.setAcceleration(dReducao * dReducao * 2); // Adição do Romulo Almeida para funcionamento do TMC 2209
