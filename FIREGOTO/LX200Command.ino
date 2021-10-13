@@ -1,6 +1,8 @@
 /*
- *   FireGoTo - an Arduino Motorized Telescope Project for Dobsonian Mounts
-    Copyright (C) 2020  Rangel Perez Sardinha / Marcos Lorensini
+ *  FireGoTo - an Arduino Motorized Telescope Project for Dobsonian Mounts
+ *  https://firegoto.com.br
+    Copyright (C) 2021  Rangel Perez Sardinha / Marcos Lorensini originally created by Reginaldo Nazar
+    Thanks to Romulo Almeida, Regis Suzano da Costa and Luiz H. Bonani
 
     This program is free software: you can redistribute it and/or modify
     it under the terms of the GNU Affero General Public License as
@@ -508,7 +510,7 @@ void printAZmount()
 
 void printALTmount() //:GA# Get Telescope Altitude Returns: sDD*MM# or sDD*MM'SS#
 {
-  char str[9];
+  char str[10];
   int Ddeg, Min, Sec;
   Ddeg = (int)DecDegtoDeg(eixoAltGrausDecimal);
   Min = (int)DecDegtoMin(eixoAltGrausDecimal);
@@ -537,11 +539,7 @@ void printDECmount() //:GD# Get Telescope Declination. Returns: sDD*MM# or sDD*M
   int Ddeg = abs((int)DecDegtoDeg(DECmount));
   int Min = abs((int)DecDegtoMin(DECmount));
   int Sec = abs((int)DecDegtoSec(DECmount));
-<<<<<<< Updated upstream
-  char str[9];
-=======
   char str[10]; // Original: char str[9]; modificado por Regis Suzano da Costa
->>>>>>> Stashed changes
   if (DECmount < 0) {
     sprintf(str, "-%02d*%02d:%02d#", int(Ddeg), int(Min), int(Sec));
   } else {
@@ -690,11 +688,11 @@ void printFirmwareTime() //Get firmware time 	:GVT# 	Reply: HH:MM:SS#
 }
 void printFirmwareNumber() //Get firmware number 	:GVN# 	Reply: 0.99a5#
 {
-  SerialPrint("0.99r11#");
+  SerialPrint("1.0.1#");
 }
 void printFirmwareNamne() //Get firmware name 	:GVP# 	Reply: On-Step#
 {
-  SerialPrint("On-Step#");
+  SerialPrint("FireGoTo#");
 
 }
 void printAlturaLimite() //:Gh# Get High Limit Returns: sDD*
@@ -1365,3 +1363,27 @@ void getMinTimer() //:HGT#
   P-Parked, p-Not parked, F-Park Failed,
   I-park In progress, R-PEC Recorded 	:GU# 	Reply: sss#
 */
+void lcdALTmount() //:GA# Get Telescope Altitude Returns: sDD*MM# or sDD*MM'SS#
+{
+  char str[10];
+  int Ddeg, Min, Sec;
+  Ddeg = (int)DecDegtoDeg(eixoAltGrausDecimal);
+  Min = (int)DecDegtoMin(eixoAltGrausDecimal);
+  Sec = (int)DecDegtoSec(eixoAltGrausDecimal);
+  if (Ddeg < 0) {
+    sprintf(str, "-%02d*%02d:%02d#", int(Ddeg), int(Min), int(Sec));
+  } else {
+    sprintf(str, "+%02d*%02d:%02d#", int(Ddeg), int(Min), int(Sec));
+  }
+  str[3] = 223;
+  lcd.print(str);
+
+}
+
+void lcdAZmount()
+{
+  char str[10];
+  sprintf(str, "%03d*%02d:%02d#", int(DecDegtoDeg(eixoAzGrausDecimal)), int(DecDegtoMin(eixoAzGrausDecimal)), int(DecDegtoSec(eixoAzGrausDecimal)));
+  str[3] = 223;
+  lcd.print(str);
+}

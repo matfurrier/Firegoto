@@ -1,6 +1,8 @@
 /*
- *   FireGoTo - an Arduino Motorized Telescope Project for Dobsonian Mounts
-    Copyright (C) 2020  Rangel Perez Sardinha / Marcos Lorensini
+ *  FireGoTo - an Arduino Motorized Telescope Project for Dobsonian Mounts
+ *  https://firegoto.com.br
+    Copyright (C) 2021  Rangel Perez Sardinha / Marcos Lorensini originally created by Reginaldo Nazar
+    Thanks to Romulo Almeida, Regis Suzano da Costa and Luiz H. Bonani
 
     This program is free software: you can redistribute it and/or modify
     it under the terms of the GNU Affero General Public License as
@@ -18,16 +20,12 @@
  */
 void RotinadeSetup() //:HSETUPON#
 {
-  SerialPrint("\n ######################################################################### \n");
+  SerialPrint("\n ######################################################################### \n\n");
   if (setupflag == 0)
   {
+    lcd.setCursor(0,1);
+    lcd.print("Executando o Setup  ");
     SerialPrint(" \n Rotina inicial de Setup \n ");
-<<<<<<< Updated upstream
-    digitalWrite(MotorALT_CFG2, LOW);
-    digitalWrite(MotorALT_CFG2, LOW);
-    digitalWrite(MotorAZ_CFG2, LOW);
-    digitalWrite(MotorAZ_CFG1, LOW);
-=======
     // Modificado por L.H.Bonani para para uso do TMC2209 e correspondência entre motores...
     if (tmcFlag == false) { // usando DVR8825 com 16 micropassos.
       SerialPrint(" \n Configurando DVR8825 em 16 micropassos \n ");
@@ -44,10 +42,10 @@ void RotinadeSetup() //:HSETUPON#
       digitalWrite(MotorAZ_M1, LOW );
       digitalWrite(MotorAZ_M0, LOW);  
     }
->>>>>>> Stashed changes
   }
   setupflag = 2;
 
+  //EnderecoLCD();
   SerialPrint(" \n O valor atual timer e: ");
   SerialPrint(String(MinTimer - 200));
   SerialPrint(" (:HST00000# -> Quanto menor mais rapido ate o limite do motor ambos motores) \n");
@@ -110,5 +108,7 @@ void RotinadeSetup() //:HSETUPON#
 
 void RotinadeSetupOff() //:HSETUPOFF#
 {
+  lcd.setCursor(0,1);
+  lcd.print("SETUP finalizado    ");
   setupflag = 0;
 }

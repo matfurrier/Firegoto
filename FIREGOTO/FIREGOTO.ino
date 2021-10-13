@@ -1,6 +1,8 @@
 /*
- *   FireGoTo - an Arduino Motorized Telescope Project for Dobsonian Mounts
-    Copyright (C) 2020  Rangel Perez Sardinha / Marcos Lorensini
+ *  FireGoTo - an Arduino Motorized Telescope Project for Dobsonian Mounts
+ *  https://firegoto.com.br
+    Copyright (C) 2021  Rangel Perez Sardinha / Marcos Lorensini originally created by Reginaldo Nazar
+    Thanks to Romulo Almeida, Regis Suzano da Costa and Luiz H. Bonani
 
     This program is free software: you can redistribute it and/or modify
     it under the terms of the GNU Affero General Public License as
@@ -14,8 +16,6 @@
 
     You should have received a copy of the GNU Affero General Public License
     along with this program.  If not, see <https://www.gnu.org/licenses/>.
-
-    TMC BRANCH
  * 
  */
 #include <AccelStepper.h>
@@ -25,17 +25,12 @@
 #include <TimeLib.h>
 #include <DueTimer.h>
 #include <DueFlashStorage.h>
-#include <TMC2130Stepper.h>
-#include <TMC2130Stepper_REGDEFS.h>
-#include <TMC2130Stepper_UTILITY.h>
-
-
+#include <Wire.h> 
+#include <LiquidCrystal_I2C.h> 
 
 //DEBUG
 int flagDebug = 0;
 
-<<<<<<< Updated upstream
-=======
 //2. Pinos Joystick
 #define xPin     A0   
 #define yPin     A1   
@@ -65,7 +60,6 @@ int jBut;
 bool exiT;
 bool moveRADEC;
 
->>>>>>> Stashed changes
 
 // Variáveis de estado (incluído por L. H. Bonani)
 bool focStatus = false;
@@ -83,21 +77,28 @@ int motorSpeedY = 0;
 //Criacao dos motores
 #define MotorALT_Direcao 22
 #define MotorALT_Passo 24
-#define MotorALT_CS 30
-#define MotorALT_CFG2 32
-#define MotorALT_CFG1 34
+#define MotorALT_Sleep 26
+#define MotorALT_Reset 28
+#define MotorALT_M2 30
+#define MotorALT_M1 32
+#define MotorALT_M0 34
 #define MotorALT_Ativa 36
 #define MotorAZ_Direcao 38
 #define MotorAZ_Passo 40
-#define MotorAZ_CS 46
-#define MotorAZ_CFG2 48
-#define MotorAZ_CFG1 50
+#define MotorAZ_Sleep 42
+#define MotorAZ_Reset 44
+#define MotorAZ_M2 46
+#define MotorAZ_M1 48
+#define MotorAZ_M0 50
 #define MotorAZ_Ativa 52
 
-// Variáveis para o controle do motor do focalizador (incluído por L. H. Bonani)
-#define MotorFoc_Direcao 7
-#define MotorFoc_Passo 6
-#define MotorFoc_Enable 0
+// Variáveis para o controle do motor do focalizador  (incluído por L. H. Bonani)
+#define MotorFoc_Direcao 0 
+#define MotorFoc_Passo 6  
+#define MotorFoc_Enable 7
+
+LiquidCrystal_I2C lcd(0x27,20,4);
+ 
 
 AccelStepper AltMotor(AccelStepper::DRIVER, MotorALT_Passo, MotorALT_Direcao);
 AccelStepper AzMotor(AccelStepper::DRIVER, MotorAZ_Passo, MotorAZ_Direcao);
@@ -116,22 +117,14 @@ int ledStateG = LOW;
 long lastInputCheckTime = 0;
 
 /*valores maximo para o passo (Valor ideal 1286400)*/
-<<<<<<< Updated upstream
-double dMaxPassoAlt = 3844654; /* //valor de resolucao AR = Passo * MicroPasso * reducao ex(200*16*402)/4    (16*200*(117/11)*56)*/
-double dMaxPassoAz = 3844654; /*/valor de resolucao AR = Passo * MicroPasso * reducao ex(200*16*402)   (16*200*(118/11)*57)*/
-int dMinTimer = 500; /*/passo*/
-double dMaxSpeedAlt = 3844654;
-double dMaxSpeedAz = 3844654;
-int dReducao = 16;
-=======
-double dMaxPassoAlt = 6384000; /* //valor de resolucao AR = Passo * MicroPasso * reducao ex(200*16*402)/4    (16*200*(117/11)*56)*/
-double dMaxPassoAz = 6384000; //6400; //2304000; /*/valor de resolucao AZ = Passo * MicroPasso * reducao ex(200*16*402)   (16*200*(118/11)*57)*/
+double dMaxPassoAlt = 1920000; //6400; //2304000; /* //valor de resolucao AR = Passo * MicroPasso * reducao ex(200*16*402)/4    (16*200*(117/11)*56)*/
+double dMaxPassoAz = 1920000; //6400; //2304000; /*/valor de resolucao AZ = Passo * MicroPasso * reducao ex(200*16*402)   (16*200*(118/11)*57)*/
 double dMaxPassoFoc = 1600;
 int dMinTimer = 150; /*/passo*/
-double dMaxSpeedAlt = 8000;
-double dMaxSpeedAz = 8000; 
+double dMaxSpeedAlt = 8000; // 6400; // 2304000;
+double dMaxSpeedAz = 8000; // 6400; //2304000;
 double dMaxSpeedFoc = 4000;
-int dReducao = 16; // Quantidade de micropassos
+int dReducao = 32; // Quantidade de micropassos
 
 // Para o controle manual dos motores (Incluído por L.H.Bonani)
 int valPotFoc = 0;
@@ -141,7 +134,6 @@ int maxSpeedMotorFoc = 4000; // 1000 ok
 int maxSpeedMotorRA = 13300; // Cálculo em função de dMaxPassoAz para uma velocidade de 10 graus/segundo (36 segundos para uma volta completa) - Incluído por L.H.Bonani
 int maxSpeedMotorDEC = 13300 ; // Cálculo em função de dMaxPassoAlt para uma velocidade de 10 graus/segundo (36 segundos para uma volta completa) - Incluído por L.H.Bonani
  
->>>>>>> Stashed changes
 
 
 //Variaveis de persistencia e estrutura de dados ----------------------------------------------------------------------------------------------------------------
@@ -243,20 +235,17 @@ double Microssegundo = 0 , SegundoFracao = 0.0, MilissegundoSeg = 0.0, Milissegu
 
 
 void setup() {
+  //Pinos Led RGB
   pinMode(LedR, OUTPUT);
   pinMode(LedG, OUTPUT);
   pinMode(LedB, OUTPUT);
   digitalWrite(LedR, ledStateR);
   digitalWrite(LedB, ledStateB);
   digitalWrite(LedG, ledStateG);
-<<<<<<< Updated upstream
-
-=======
   //Pinos Joystick
   pinMode(xPin, INPUT);
   pinMode(yPin, INPUT);
   pinMode(kPin, INPUT_PULLUP);
->>>>>>> Stashed changes
 
 
   if (ledStateR == LOW) {
@@ -269,10 +258,7 @@ void setup() {
   Serial.begin(9600);
   Serial3.begin(9600);
   SerialUSB.begin(9600);
-<<<<<<< Updated upstream
-=======
   Wire1.begin();
->>>>>>> Stashed changes
 
 
 
@@ -291,7 +277,7 @@ void setup() {
     configuration.longitude = -49.20;
     configuration.SentidoDEC = 0;
     configuration.SentidoRA = 0;
-    setTime(22, 00, 00, 23, 03, 2015);
+    setTime(00, 00, 00, 01, 01, 2021);
     MilissegundoSeg = second();
     configuration.DataHora = now();
     configuration.UTC = -2;
@@ -335,11 +321,6 @@ void setup() {
     }
   }
   if(Reducao==16) {
-<<<<<<< Updated upstream
-    AltaM2 = LOW;
-    AltaM1 = LOW;
-    AltaM0 = LOW;
-=======
     if (tmcFlag == false) {
       AltaM2 = HIGH;
       AltaM1 = LOW;
@@ -348,7 +329,6 @@ void setup() {
       AltaM0 = HIGH;
       AltaM1 = HIGH;
     }
->>>>>>> Stashed changes
   }
   if(Reducao==8) {
     if (tmcFlag == false) {
@@ -407,13 +387,10 @@ void setup() {
   ResolucaoeixoAzGrausDecimal = 360.0 / MaxPassoAz ;
   ResolucaoeixoAltPassoGrau = (MaxPassoAlt  / 360.0);
   ResolucaoeixoAzPassoGrau = (MaxPassoAz  / 360.0);
-<<<<<<< Updated upstream
-=======
   //Instruções do LCD
   lcd.begin(Wire1); 
   lcd.backlight();
   lcd.clear();
->>>>>>> Stashed changes
 }
 
 void loop() {
@@ -437,12 +414,16 @@ void loop() {
   }
   if ( setupflag == 0 )
   {
-    if (PrimeiroCommanMillis < currentMillis)
-
+    if (flagDebug == 1)
     {
-      PrintLocalHora();
-      SerialPrintDebug(String(Hora2DecHora(hour(), minute(), SegundoFracao), 10)) ;
-      PrimeiroCommanMillis = PrimeiroCommanMillis + 1001;
+      if (PrimeiroCommanMillis < currentMillis)
+
+      {
+        //Relógio desabilitado para nao comprometer o sync
+        PrintLocalHora();
+        SerialPrintDebug(String(Hora2DecHora(hour(), minute(), SegundoFracao), 10)) ;
+        PrimeiroCommanMillis = PrimeiroCommanMillis + 1001;
+      }
     }
   }
   if ( setupflag == 1 )
@@ -502,10 +483,6 @@ void loop() {
     previousMillis = millis();
   }
   AlteraMicroSeg();
-<<<<<<< Updated upstream
-
-=======
   controlJoystick2();
   menu();
->>>>>>> Stashed changes
 }
