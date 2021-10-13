@@ -317,14 +317,16 @@ void BaixaResolucao () { // Modificado por L.H.Bonani para permitir o uso do TMC
       AltMotor.setAcceleration(dReducao * 4);
       AzMotor.setAcceleration(dReducao * 4);
     } else {
-      MaxPassoAz = dMaxPassoAz / dReducao * 8;
-      MaxPassoAlt = dMaxPassoAlt / dReducao * 8;    
+      MaxPassoAz = dMaxPassoAz / dReducao; //Retirado *8 por Romulo Almeida
+      MaxPassoAlt = dMaxPassoAlt / dReducao; //Retirado *8 por Romulo Almeida
       digitalWrite(MotorALT_M1, LOW);
       digitalWrite(MotorALT_M0, LOW);
       digitalWrite(MotorAZ_M1, LOW );
       digitalWrite(MotorAZ_M0, LOW);  
-      AltMotor.setCurrentPosition((int)AltMotor.currentPosition() / dReducao * 8);
-      AzMotor.setCurrentPosition((int)AzMotor.currentPosition() / dReducao * 8);
+      AltMotor.setCurrentPosition((int)AltMotor.currentPosition() / dReducao); //Retirado *8 por Romulo Almeida
+      AzMotor.setCurrentPosition((int)AzMotor.currentPosition() / dReducao); //Retirado *8 por Romulo Almeida
+      AltMotor.setAcceleration(MaxPassoAz / 60); //Adição do Romulo Almeida para acerto de velocidade
+      AzMotor.setAcceleration(MaxPassoAz / 60); //Adição do Romulo Almeida para acerto de velocidade
     }
     CalculaResolucao();
     CalcPosicaoPasso();
@@ -345,16 +347,17 @@ void AltaResolucao () {  // Modificado por L.H.Bonani para permitir o uso do TMC
        digitalWrite(MotorAZ_M0, AltaM0);
        AltMotor.setCurrentPosition((int)AltMotor.currentPosition() * dReducao);
        AzMotor.setCurrentPosition((int)AzMotor.currentPosition() * dReducao);
-       AltMotor.setAcceleration(dReducao * dReducao *  2);
-       AzMotor.setAcceleration(dReducao * dReducao * 2);
+
     } else {
        digitalWrite(MotorALT_M1, AltaM1);
        digitalWrite(MotorALT_M0, AltaM0);
        digitalWrite(MotorAZ_M1, AltaM1);
        digitalWrite(MotorAZ_M0, AltaM0);
-       AltMotor.setCurrentPosition((int)AltMotor.currentPosition() * dReducao / 8);
-       AzMotor.setCurrentPosition((int)AzMotor.currentPosition() * dReducao / 8);
+       AltMotor.setCurrentPosition((int)AltMotor.currentPosition() * dReducao * 2); // Adição do Romulo Almeida para funcionamento do TMC 2209
+       AzMotor.setCurrentPosition((int)AzMotor.currentPosition() * dReducao * 2); // Adição do Romulo Almeida para funcionamento do TMC 2209
     }
+    AltMotor.setAcceleration(dReducao * dReducao * 2); // Adição do Romulo Almeida para funcionamento do TMC 2209
+    AzMotor.setAcceleration(dReducao * dReducao * 2); // Adição do Romulo Almeida para funcionamento do TMC 2209
     CalculaResolucao();
     CalcPosicaoPasso();
     ledStateG = LOW;
